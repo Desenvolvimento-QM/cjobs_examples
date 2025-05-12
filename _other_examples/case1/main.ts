@@ -66,6 +66,7 @@ class Processador {
       );
     } catch (error) {
       console.error(`Erro ao atualizar tratativa ${tratativaId}:`, error);
+      process.exit(1);
     }
   }
 
@@ -98,6 +99,7 @@ class Processador {
       console.log("Processamento de NOVOS para ATRASADOS concluído");
     } catch (error) {
       console.error("Erro ao processar novos pendentes:", error);
+      process.exit(1);
     }
   }
 
@@ -136,6 +138,7 @@ class Processador {
       console.log("Processamento de ANDAMENTOS para ATRASADOS concluído");
     } catch (error) {
       console.error("Erro ao processar andamentos pendentes:", error);
+      process.exit(1);
     }
   }
 
@@ -153,6 +156,7 @@ class Processador {
       console.log("Todas as rotinas foram executadas com sucesso!");
     } catch (error) {
       console.error("Erro na execução das rotinas:", error);
+      process.exit(1);
     }
   }
 }
