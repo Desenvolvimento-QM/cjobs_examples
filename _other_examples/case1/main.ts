@@ -6,20 +6,25 @@ import { format, subDays } from "date-fns";
 dotenv.config();
 
 // Tipos
-interface Tratativa {
+interface TratativaAndamentos {
   id_tratativa: string;
+  dt_criacao: string;
   dt_ultima_msg?: string;
+
+  [key: string]: any;
+}
+
+interface TratativaNovos {
+  id_tratativa: string;
   [key: string]: any;
 }
 
 // Configurações a partir do arquivo .env
 const API_KEY = process.env.API_KEY as string;
 const HOST = process.env.HOST as string;
-const DATABASE_ID_NOVOS = process.env.DATABASE_ID_NOVOS as string;
+const DATABASE_ID_TRATATIVA = process.env.DATABASE_ID_TRATATIVA as string;
 const QUERY_ID_NOVOS = process.env.QUERY_ID_NOVOS as string;
-const DATABASE_ID_ANDAMENTOS = process.env.DATABASE_ID_ANDAMENTOS as string;
 const QUERY_ID_ANDAMENTOS = process.env.QUERY_ID_ANDAMENTOS as string;
-const DATABASE_ID_MODELO = process.env.DATABASE_ID_MODELO as string;
 const MODELO_ID = process.env.MODELO_ID as string;
 const DIAS_ATRASO = Number(process.env.DIAS_ATRASO);
 
@@ -53,7 +58,7 @@ class Processador {
   ): Promise<void> {
     try {
       await api.patch(
-        `/record/sync-single-update/${DATABASE_ID_MODELO}/${MODELO_ID}`,
+        `/record/sync-single-update/${DATABASE_ID_TRATATIVA}/${MODELO_ID}`,
         {
           record: {
             id_tratativa: tratativaId,
@@ -78,7 +83,7 @@ class Processador {
       console.log("Iniciando processamento de NOVOS para ATRASADOS...");
 
       const dataMenos7 = this.getDataMenosX(DIAS_ATRASO);
-      const url = `/record/sync-list-many/${DATABASE_ID_NOVOS}/query-id/${QUERY_ID_NOVOS}`;
+      const url = `/record/sync-list-many/${DATABASE_ID_TRATATIVA}/query-id/${QUERY_ID_NOVOS}`;
 
       const response = await api.get(url, {
         params: {
@@ -86,7 +91,7 @@ class Processador {
         },
       });
 
-      const tratativas: Tratativa[] = response.data.records || [];
+      const tratativas: TratativaNovos[] = response.data.records || [];
       console.log(
         `Encontradas ${tratativas.length} tratativas NOVAS atrasadas`
       );
@@ -110,10 +115,10 @@ class Processador {
     try {
       console.log("Iniciando processamento de ANDAMENTOS para ATRASADOS...");
 
-      const url = `/record/sync-list-many/${DATABASE_ID_ANDAMENTOS}/query-id/${QUERY_ID_ANDAMENTOS}`;
+      const url = `/record/sync-list-many/${DATABASE_ID_TRATATIVA}/query-id/${QUERY_ID_ANDAMENTOS}`;
 
       const response = await api.get(url);
-      const tratativas: Tratativa[] = response.data.records || [];
+      const tratativas: TratativaAndamentos[] = response.data.records || [];
       console.log(`Encontradas ${tratativas.length} tratativas em ANDAMENTO`);
 
       // Data limite (7 dias atrás)
@@ -121,9 +126,12 @@ class Processador {
 
       // Filtrar tratativas com última mensagem mais antiga que 7 dias
       const tratativasAtrasadas = tratativas.filter((tratativa) => {
-        if (!tratativa.dt_ultima_msg) return false;
-        const dataUltimaMensagem = new Date(tratativa.dt_ultima_msg);
-        return dataUltimaMensagem < dataLimite;
+        // Usar dt_criacao como fallback se dt_ultima_msg for nulo ou indefinido
+        const dataReferencia = tratativa.dt_ultima_msg
+          ? new Date(tratativa.dt_ultima_msg)
+          : new Date(tratativa.dt_criacao);
+
+        return dataReferencia < dataLimite;
       });
 
       console.log(
