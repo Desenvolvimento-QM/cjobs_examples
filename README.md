@@ -39,4 +39,19 @@ Esse exemplo é de um main Node.js TypeScript que recebe parâmetros JSON, faz u
 - **Saída:** JSON -> STRING
 
 [Leia mais](./node_ts_example2/README.md)
+
+### 5. Caso 1 - Monitoramento de Tratativas
+
+Este exemplo demonstra um sistema de monitoramento de tratativas que verifica e atualiza o status das tratativas atrasadas.
+
+#### Modificações Recentes:
+- Consolidação das variáveis de ambiente: usando `DATABASE_ID_TRATATIVA` unificado para todas as operações
+- Criação de interfaces separadas: `TratativaNovos` e `TratativaAndamentos` para melhor tipagem
+- Implementação de fallback para tratativas sem data de última mensagem, utilizando `dt_criacao` como referência
+
+- **Entrada:** Configuração via arquivo .env
+- **Saída:** Atualização de status de tratativas no banco de dados
+
+[Leia mais](./_other_examples/case1/README.md)
+
 # cjobs_examples
