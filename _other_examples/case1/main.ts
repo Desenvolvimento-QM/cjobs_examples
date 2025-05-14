@@ -157,6 +157,11 @@ class Processador {
     try {
       console.log("Iniciando execução das rotinas...");
 
+      console.log("DATABASE_ID_TRATATIVA:", DATABASE_ID_TRATATIVA);
+      console.log("QUERY_ID_NOVOS:", QUERY_ID_NOVOS);
+      console.log("QUERY_ID_ANDAMENTOS:", QUERY_ID_ANDAMENTOS);
+      console.log("DIAS_ATRASO:", DIAS_ATRASO);
+
       // Executar as duas rotinas sequencialmente
       await this.processarNovosPendentes();
       await this.processarAndamentosPendentes();
