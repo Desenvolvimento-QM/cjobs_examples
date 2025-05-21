@@ -6,3 +6,6 @@ dist/
 
 # Ignore environment variables
 .env
+
+# Ignora package-lock.json
+package-lock.json
